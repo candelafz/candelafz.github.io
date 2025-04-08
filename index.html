@@ -16,6 +16,7 @@
             <div class="form-group Contraseña">
                 <input type="password" id="password" required>
                 <label for="password">Contraseña</label>
+                <button type="button" onclick="togglePassword()" class="toggle-pass">👁️</button>
             </div>
             <!--si queremos para recordar contraseña seria
             <div class="recordad">¿Olvido su contraseña?</div>-->
@@ -26,8 +27,13 @@
                 ¿No tienes cuenta? <a href="registrarse.html">registrarse</a>
             </div>
         </form>
-
-
-    </div>
+        </div>
+     <!-- este script es basicamente JS embebido, no hace falta crear un archivo .js (por ahora)-->
+     <script> 
+        function togglePassword() { 
+          const input = document.getElementById("password");
+          input.type = input.type === "password" ? "text" : "password";
+        }
+      </script>
 </body>
 </html>

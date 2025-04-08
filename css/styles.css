@@ -122,3 +122,16 @@ input[type="submit"]:hover {
 .registrarse a:hover {
     text-decoration: underline;
 }
+/*ojito a la derecha */
+.toggle-pass {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #76448a;
+    z-index: 2;
+}
