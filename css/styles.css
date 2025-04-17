@@ -71,7 +71,9 @@ body {
   }
 .formulario {
     text-align: center;
-    width: 400px;
+    width: 90%;
+    max-width: 400px;
+    margin: 0 20px;
     backdrop-filter: blur(10px);
     background: rgba(240, 209, 240, 0.486); 
     border: 1px solid rgba(255, 255, 255, 0.3); /* Borde tipo glass */
@@ -88,13 +90,16 @@ body {
 
 .formulario form {
     padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
     box-sizing: border-box;
 }
 
 .form-group {
     position: relative;
     border-bottom: 2px solid #76448a;
-    margin: 30px 0;
+
 }
 
 .form-group input {
@@ -248,3 +253,53 @@ body {
     height: 315px;
 }
 
+/* ojo cerrar abrir*/
+.eye-icon {
+    width: 24px;
+    height: 24px;
+    stroke: #76448a;
+  }
+
+  .hidden {
+    display: none;
+  }
+/*para hacerlo responsive*/
+/* Tablets y pantallas medianas */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 20px;
+    }
+
+    .contenido {
+        padding: 60px 30px;
+    }
+
+    .guia {
+        flex-direction: column;
+        padding: 40px 30px;
+    }
+}
+/* Celulares */
+@media (max-width: 480px) {
+    .logo h1 {
+        font-size: 1.5rem;
+    }
+    .contenido h1 {
+        font-size: 2rem;
+    }
+    .contenido p {
+        font-size: 1rem;
+    }
+    .guia-texto h2 {
+        font-size: 1.5rem;
+    }
+    .guia-texto p {
+        font-size: 1rem;
+    }
+    .btn {
+        width: 100%;
+        max-width: 250px;
+    }
+}

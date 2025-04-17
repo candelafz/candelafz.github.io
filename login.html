@@ -18,10 +18,16 @@
             <div class="form-group Contraseña">
                 <input type="password" id="password" required>
                 <label for="password">Contraseña</label>
-                <button type="button" onclick="togglePassword()" class="toggle-pass"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="#76448a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye">
-                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </svg>
+                <button type="button" onclick="togglePassword()" class="toggle-pass">
+                    <svg id="eye-closed" class="eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                      <line x1="3" y1="3" x2="21" y2="21"/>
+                    </svg>
+                    <svg id="eye-open" class="eye-icon hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
                   </button>
             </div>
             <!--si queremos para recordar contraseña seria
@@ -40,9 +46,22 @@
     <!-- este script es basicamente JS embebido, no hace falta crear un archivo .js (por ahora)-->
     <script> 
         function togglePassword() { 
-          const input = document.getElementById("password");
-          input.type = input.type === "password" ? "text" : "password";
+            const passwordInput = document.getElementById('password');
+          const eyeOpen = document.getElementById('eye-open');
+          const eyeClosed = document.getElementById('eye-closed');
+    
+          if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeClosed.classList.add('hidden');
+            eyeOpen.classList.remove('hidden');
+          } else {
+            passwordInput.type = 'password';
+            eyeClosed.classList.remove('hidden');
+            eyeOpen.classList.add('hidden');
+          }
         }
       </script>
+
+
 </body>
 </html>
