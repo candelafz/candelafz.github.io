@@ -79,7 +79,8 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.3); /* Borde tipo glass */
     border-radius: 10px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    padding-bottom: 30px;
+    padding: 0 30px;
+    justify-content: center;
 }
 /*titulo*/
 .formulario h1 {
@@ -89,7 +90,7 @@ body {
 }
 
 .formulario form {
-    padding: 0 40px;
+    padding: 30px 40px;
     display: flex;
     flex-direction: column;
     gap: 30px;
@@ -99,7 +100,6 @@ body {
 .form-group {
     position: relative;
     border-bottom: 2px solid #76448a;
-
 }
 
 .form-group input {
@@ -135,7 +135,7 @@ body {
     transition: .5s;
 }
 
-.form-group input:focus ~ label, .form-group input:valid ~ label {
+.form-group input:focus ~ label, .form-group input:not(:placeholder-shown) ~ label {
     top: -5px;
     color: #76448a;
 }
