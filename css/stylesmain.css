@@ -147,7 +147,7 @@ body {
     transition: background-color 0.3s ease, transform 0.2s ease;  
   }
   .delete-btn svg {
-    width: 100%;   /* Ajusta el tamaño del icono */
+    width: 100%;  
     height: 100%;
     stroke: #a00;
     transition: stroke 0.3s ease, transform 0.2s ease;
