@@ -64,6 +64,8 @@ body {
   
   /* boton para agregar nota */
   .add-box {
+    max-width: 250px;
+    max-height: 250px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -92,14 +94,21 @@ body {
   
   /* Estilo de las notas */
   .note-box {
+    position: relative;
+    max-width: 250px;
+    max-height: 250px;
     aspect-ratio: 1 / 1; /* hace que sean cuadradas */
     margin: 5%;
-    background-color: #f7dc6f; 
+    background-color: #fdf3b0; 
     border-radius: 10px;
     padding: 20px;
     box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.15);
     transition: transform 0.2s ease;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 200px;
   }
   
   .note-box:hover {
@@ -120,3 +129,56 @@ body {
     outline: none;
     white-space: pre-wrap;
   }
+  /* borrar nota tachito*/ 
+  .delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;  
+    height: 30px;
+    border-radius: 50%;  
+    transition: background-color 0.3s ease, transform 0.2s ease;  
+  }
+  .delete-btn svg {
+    width: 100%;   /* Ajusta el tamaño del icono */
+    height: 100%;
+    stroke: #a00;
+    transition: stroke 0.3s ease, transform 0.2s ease;
+}
+  
+  .delete-btn:hover {
+    background-color: rgba(255, 0, 0, 0.1);  /* Fondo sutil al pasar el mouse */
+    transform: scale(1.1);  /* Agranda el botón al pasar el ratón */
+    stroke: #d00;
+    
+  }
+  
+
+  .note-footer {
+    margin-top: auto; 
+    font-size: 0.9rem; 
+    color: #666; 
+    text-align: right; 
+
+}
+/*para hacerlo responsive*/
+/* Tablets y pantallas medianas */
+/* Media Queries para pantallas más pequeñas */
+@media (max-width: 768px) {
+  .wrapper {
+      grid-template-columns: repeat(2, 1fr); /* Dos columnas en pantallas pequeñas */
+  }
+}
+
+@media (max-width: 480px) {
+  .wrapper {
+      grid-template-columns: 1fr; /* Una columna en pantallas muy pequeñas */
+  }
+}
