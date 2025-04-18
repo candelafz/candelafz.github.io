@@ -179,6 +179,6 @@ body {
 
 @media (max-width: 480px) {
   .wrapper {
-      grid-template-columns: 1fr; /* Una columna en pantallas muy pequeñas */
+      grid-template-columns: repeat(2, 1fr); /* Una columna en pantallas muy pequeñas */
   }
 }
