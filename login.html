@@ -33,35 +33,20 @@
             <!--si queremos para recordar contraseña seria
             <div class="recordad">¿Olvido su contraseña?</div>-->
             <input type="submit" class="btn" value="Iniciar">
-        
-            
-            
-            <div class="registrarse">
-                ¿No tienes cuenta? <a href="registrarse.html">registrarse</a>
-            </div>
-        </form>
+        <div class="registrarse">
+          ¿No tienes cuenta? <a href="registrarse.html">registrarse</a>
+        </div>
+      </form>
     </div>
-</div>
-    
-    <!-- este script es basicamente JS embebido, no hace falta crear un archivo .js (por ahora)-->
-    <script> 
-        function togglePassword() { 
-            const passwordInput = document.getElementById('password');
-          const eyeOpen = document.getElementById('eye-open');
-          const eyeClosed = document.getElementById('eye-closed');
-    
-          if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            eyeClosed.classList.add('hidden');
-            eyeOpen.classList.remove('hidden');
-          } else {
-            passwordInput.type = 'password';
-            eyeClosed.classList.remove('hidden');
-            eyeOpen.classList.add('hidden');
-          }
-        }
-      </script>
+  </div>
+
+  <script src="jsLogin.js"></script>
+
+
+
+
 
 
 </body>
+
 </html>
