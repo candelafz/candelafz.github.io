@@ -466,7 +466,7 @@ h2 {
     padding: 10px; 
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-  
+    box-sizing: border-box;
   }
 
   .note-box {
