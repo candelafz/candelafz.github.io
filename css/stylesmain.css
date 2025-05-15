@@ -224,52 +224,6 @@ body {
 
 }
 
-/*para hacerlo responsive*/
-/* Tablets y pantallas medianas */
-@media (max-width: 768px) {
-  .wrapper {
-    grid-template-columns: repeat(2, 1fr);
-    /* Dos columnas en pantallas pequeñas */
-  }
-}
-
-@media (max-width: 480px) {
-  .wrapper {
-    grid-template-columns: repeat(2, 1fr);
-    /* Una columna en pantallas muy pequeñas */
-  }
-
-  .note-box {
-    max-width: 130px;
-    max-height: 130px;
-    height: 130px;
-    padding: 10px;
-  }
-
-  .note-title {
-    font-size: 0.9rem;
-  }
-
-  .note-content {
-    font-size: 0.7rem;
-  }
-
-  .note-footer {
-    font-size: 0.55rem;
-  }
-
-  .add-box {
-    max-width: 130px;
-    max-height: 130px;
-  }
-
-  .add-box .icon {
-    height: 40px;
-    width: 40px;
-    font-size: 20px;
-  }
-}
-
 /* fondo oscuro atras de la nota ampliada */
 .overlay {
   position: fixed;
@@ -493,4 +447,52 @@ h2 {
   padding: 20px;
   text-align: center;
   color: #444;
+}
+/*para hacerlo responsive*/
+/* Tablets y pantallas medianas */
+@media (max-width: 768px) {
+  .wrapper {
+    grid-template-columns: repeat(2, 1fr);
+    /* Dos columnas en pantallas pequeñas */
+  }
+}
+
+@media (max-width: 480px) {
+  .wrapper {
+    height: auto;
+    max-height: calc(100vh - 160px); /* descuenta header y márgenes */
+    overflow-y: auto;
+    grid-template-columns: repeat(2, 1fr);
+  
+  }
+
+  .note-box {
+    max-width: 130px;
+    max-height: 130px;
+    height: 130px;
+    padding: 10px;
+  }
+
+  .note-title {
+    font-size: 0.9rem;
+  }
+
+  .note-content {
+    font-size: 0.7rem;
+  }
+
+  .note-footer {
+    font-size: 0.55rem;
+  }
+
+  .add-box {
+    max-width: 130px;
+    max-height: 130px;
+  }
+
+  .add-box .icon {
+    height: 40px;
+    width: 40px;
+    font-size: 20px;
+  }
 }
