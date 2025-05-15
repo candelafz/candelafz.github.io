@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
     
   });
+
 function agregarNota() {
     const contenedor = document.getElementById('contenedor-notas');
     const nuevaNota = document.createElement('div'); //crea la nota nueva
@@ -92,4 +93,77 @@ function ampliarNota(notaOriginal) {
     document.body.appendChild(overlay);
 
     
+}
+
+function inicializarPerfil() {
+// abrir selector de archivos cuando apretas el perfil
+const foto = document.getElementById('fotoPerfil');
+const input = document.getElementById('inputFoto');
+
+foto.addEventListener('click', () => input.click());
+
+input.addEventListener('change', () => {
+  const file = input.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      foto.src = e.target.result;
+      // guarda en localstorage para mantenerlo al recargar:
+      localStorage.setItem('fotoPerfil', e.target.result);
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// por si ya hay una imagen guardada
+const guardada = localStorage.getItem('fotoPerfil');
+if (guardada) {
+  foto.src = guardada;
+}
+
+// muardar el nombre cuando se edita
+const nombre = document.getElementById('nombrePerfil');
+
+nombre.addEventListener('input', () => {
+    localStorage.setItem('nombreUsuario', nombre.textContent.trim());
+  });
+
+  // mostrar el nombre guardado
+  const nombreGuardado = localStorage.getItem('nombreUsuario');
+  if (nombreGuardado) {
+    nombre.textContent = nombreGuardado;
+  }
+  // boton volver atras
+  document.getElementById('btnVolver').addEventListener('click', () => {
+    window.location.href = 'main.html';
+  });
+ }
+ document.addEventListener('DOMContentLoaded', () => {
+    inicializarPerfil();
+});
+
+const btnMenu = document.getElementById('btnMenu');
+const menu = document.getElementById('menu');
+
+btnMenu.addEventListener('click', () => {
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+});
+
+function mostrarSeccion(seccion) {
+  const individuales = document.getElementById('notas-individuales');
+  const grupales = document.getElementById('notas-grupales');
+  const btnInd = document.getElementById('btn-individual');
+  const btnGrp = document.getElementById('btn-grupal');
+
+  if (seccion === 'individual') {
+    individuales.style.display = 'block';
+    grupales.style.display = 'none';
+    btnInd.classList.add('activo');
+    btnGrp.classList.remove('activo');
+  } else {
+    individuales.style.display = 'none';
+    grupales.style.display = 'block';
+    btnGrp.classList.add('activo');
+    btnInd.classList.remove('activo');
+  }
 }
