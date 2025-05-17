@@ -293,6 +293,29 @@ body {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
+.modalGrupo .modal-contenido {
+  background: #fff5f5;
+  border: 2px solid #e46a6a;
+}
+
+/* Estilos para el botón */
+#btnCrearGrupo {
+  padding: 10px 15px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Estilos del input */
+#nombreGrupoInput {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
 /* Modal base */
 .modal {
   position: fixed;
@@ -397,6 +420,35 @@ h2 {
 
 .btn-volver:hover {
   background-color: #5b3370;
+}
+
+#notificacionesBtn {
+  position: absolute;
+  top: 20px;
+  right: 60px; 
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.notificacion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f4f4f4;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.acciones-notificacion {
+  display: flex;
+  gap: 10px;
+}
+
+.acciones-notificacion span {
+  cursor: pointer;
+  font-size: 18px;
 }
 
 .menu-hamburguesa {
