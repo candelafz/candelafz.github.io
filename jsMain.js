@@ -34,7 +34,25 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
     .catch(err => console.error('Error al obtener grupos:', err));
+
+    //Modo oscuro (no funciona en el host solo de forma local no entiendo)
+    window.toggleDarkMode = function () {
+    document.body.classList.toggle('dark-mode');
+    const modoActual = document.body.classList.contains('dark-mode') ? 'Modo claro' : 'Modo oscuro';
+    document.getElementById('modoToggleBtn').textContent = modoActual;
+  };
 });
+ 
+function colorPorEditor(editor) {
+  // Genera un color pastel a partir del nombre del editor
+  let hash = 0;
+  for (let i = 0; i < editor.length; i++) {
+    hash = editor.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  // Generar color pastel
+  const h = Math.abs(hash) % 360;
+  return `hsl(${h}, 70%, 85%)`;
+}
 
 
 function mostrarNotasDesdeBackend(notas, id_grupo = null) {
@@ -52,21 +70,30 @@ function mostrarNotasDesdeBackend(notas, id_grupo = null) {
     const nuevaNota = document.createElement('div');
     nuevaNota.classList.add('note-box');
     nuevaNota.setAttribute('data-uuid', nota.uuid);
+
     let fechaTexto = nota.fecha ? new Date(nota.fecha).toLocaleString() : '';
-    nuevaNota.innerHTML = `
-            <h3 class="note-title">${nota.titulo}</h3>
-            <p class="note-content">${nota.contenido}</p>
-            <div class="note-footer">
-              <span class="note-date">${fechaTexto}</span>
-              <button class="delete-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#76448a" stroke-width="2">
+    let editor = (id_grupo !== null) ? nota.editor : null;
+
+     // Asignar color si hay editor
+    if (editor) {
+      nuevaNota.style.background = colorPorEditor(editor);
+    }
+    
+    
+     nuevaNota.innerHTML = `
+      <h3 class="note-title">${nota.titulo}</h3>
+      <p class="note-content">${nota.contenido.replace(/\n/g, '<br>')}</p>
+      <div class="note-footer">
+        <span class="note-date">${fechaTexto}${editor ? ' - ' + editor : ''}</span>
+        <button class="delete-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#76448a" stroke-width="2">
             <path d="M3 6h18M5 6l1 16h12l1-16H5z" />
             <path d="M10 11v6M14 11v6" />
-            <path d="M9 6V4a1 1 0 0 1 1-1h4a 1 1 0 0 1 1 1v2" />
-            </svg>
-              </button>
-            </div>
-        `;
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+          </svg>
+        </button>
+      </div>
+    `;
     nuevaNota.querySelector('.delete-btn').addEventListener('click', function (e) {
       e.stopPropagation();
       const uuid = nuevaNota.getAttribute('data-uuid');
@@ -143,8 +170,8 @@ function mostrarGruposDesdeBackend(grupos) {
   });
 }
 
-
 function mostrarVistaGrupo(nombreGrupo, idGrupo) {
+  document.getElementById('barra-secciones').style.display = 'none'; // OCULTA la barra
   document.getElementById('notas-grupales').style.display = 'none';
   document.getElementById('vista-grupo').style.display = 'block';
   document.getElementById('nombre-del-grupo').innerText = nombreGrupo;
@@ -235,47 +262,133 @@ function ampliarNota(notaOriginal) {
   contenido.contentEditable = true;
   contenido.innerText = contenidoOriginal;
   const notaUuid = notaOriginal.getAttribute('data-uuid');
+
+  // Botón historial
+  const historialBtn = document.createElement('button');
+  historialBtn.className = 'nota-btn';
+  historialBtn.title = 'Ver historial';
+  // SVG de reloj con flecha hacia la izquierda
+  historialBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg"  fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="9" />
+  <path d="M12 7v5l3 2" />
+</svg>`;
+  historialBtn.onclick = () => {
+    mostrarHistorialNota(notaUuid);
+  };
+
+
+  // Botón cerrar 
   const cerrarBtn = document.createElement('button');
-  cerrarBtn.className = 'cerrar-btn';
+  cerrarBtn.className = 'nota-btn';
   cerrarBtn.innerHTML = '✖';
   cerrarBtn.onclick = () => {
-    const nuevoTitulo = titulo.innerText;
+     const nuevoTitulo = titulo.innerText;
     const nuevoContenido = contenido.innerText;
-    notaOriginal.querySelector('.note-title').innerText = nuevoTitulo;
-    notaOriginal.querySelector('.note-content').innerText = nuevoContenido;
-    overlay.remove();
-    let body = `accion=guardar_nota&uuid=${encodeURIComponent(notaUuid)}&titulo=${encodeURIComponent(nuevoTitulo)}&contenido=${encodeURIComponent(nuevoContenido)}`;
-    // Detectar si es nota grupal
-    if (grupoActivoId && !isNaN(grupoActivoId)) {
-      body += `&id_grupo=${encodeURIComponent(grupoActivoId)}`;
-    }
-    fetch('main.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          if (data.uuid) {
-            notaOriginal.setAttribute('data-uuid', data.uuid);
-          }
-          const fechaSpan = notaOriginal.querySelector('.note-date');
-          if (fechaSpan) {
-            const ahora = new Date();
-            fechaSpan.textContent = ahora.toLocaleString();
-          }
-        } else {
-          alert('Error: ' + data.message);
-        }
+    // Si el título o contenido han cambiado, actualiza la nota
+    if (nuevoTitulo !== tituloOriginal || nuevoContenido !== contenidoOriginal) {
+      notaOriginal.querySelector('.note-title').innerText = nuevoTitulo;
+      notaOriginal.querySelector('.note-content').innerText = nuevoContenido;
+      overlay.remove();
+      let body = `accion=guardar_nota&uuid=${encodeURIComponent(notaUuid)}&titulo=${encodeURIComponent(nuevoTitulo)}&contenido=${encodeURIComponent(nuevoContenido)}`;
+      // Detectar si es nota grupal
+      if (grupoActivoId && !isNaN(grupoActivoId)) {
+        body += `&id_grupo=${encodeURIComponent(grupoActivoId)}`;
+      }
+      fetch('main.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body
       })
-      .catch(() => alert('Error al conectar con el servidor.'));
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            if (data.uuid) {
+              notaOriginal.setAttribute('data-uuid', data.uuid);
+            }
+            const fechaSpan = notaOriginal.querySelector('.note-date');
+            if (fechaSpan) {
+              const ahora = new Date();
+              fechaSpan.textContent = ahora.toLocaleString();
+            }
+          } else {
+            alert('Error: ' + data.message);
+          }
+        })
+        .catch(() => alert('Error al conectar con el servidor.'));
+    }
+    overlay.remove();
   };
-  notaClonada.appendChild(cerrarBtn);
+
+
+  // Botón descargar 
+  const descargarBtn = document.createElement('button');
+  descargarBtn.className = 'nota-btn';
+  descargarBtn.title = 'Descargar nota';
+  descargarBtn.innerHTML = `<svg  fill="currentColor" viewBox="0 0 24 24"><path d="M12 16l4-5h-3V4h-2v7H8l4 5zm-8 2v2h16v-2H4z"/></svg>`;
+  descargarBtn.onclick = () => {
+    const texto = `Título: ${titulo.innerText}\n\n${contenido.innerText}`;
+    const blob = new Blob([texto], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = (titulo.innerText.trim() || 'nota') + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 0);
+  };
+
+  // Agregá los botones arriba de la nota
+  const acciones = document.createElement('div');
+  acciones.style.display = 'flex';
+  acciones.style.justifyContent = 'flex-end';
+  acciones.style.gap = '8px';
+  acciones.appendChild(historialBtn);
+  acciones.appendChild(descargarBtn);
+  acciones.appendChild(cerrarBtn);
+
+  notaClonada.appendChild(acciones);
   notaClonada.appendChild(titulo);
   notaClonada.appendChild(contenido);
   overlay.appendChild(notaClonada);
   document.body.appendChild(overlay);
+}
+
+// Mostrar historial de una nota en el modal
+function mostrarHistorialNota(uuid) {
+  fetch('main.php?action=historial_nota&uuid=' + encodeURIComponent(uuid))
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && Array.isArray(data.historial)) {
+        const contenedor = document.getElementById('historialNotasContenedor');
+        contenedor.innerHTML = '';
+        data.historial.forEach(version => {
+          const variante = document.createElement('div');
+          variante.className = 'note-box';
+          let fechaTexto = version.fecha ? new Date(version.fecha).toLocaleString() : '';
+          let editor = version.editor || '';
+          variante.style.background = colorPorEditor(editor);
+          variante.innerHTML = `
+            <h3 class="note-title">${version.titulo}</h3>
+            <p class="note-content">${version.contenido}</p>
+            <div class="note-footer">
+              <span class="note-date">${fechaTexto}${editor}</span>
+            </div>
+          `;
+          contenedor.appendChild(variante);
+        });
+        document.getElementById('modalHistorialNota').classList.remove('oculto');
+      } else {
+        alert('No hay historial disponible para esta nota.');
+      }
+    })
+    .catch(() => alert('Error al obtener el historial de la nota.'));
+}
+
+function cerrarModalHistorialNota() {
+  document.getElementById('modalHistorialNota').classList.add('oculto');
 }
 
 function generarUUID() {
@@ -463,6 +576,7 @@ function volverAGrupos() {
   grupoActivoId = null; // Resetear el grupo activo
   document.getElementById('vista-grupo').style.display = 'none';
   document.getElementById('notas-grupales').style.display = 'block';
+  document.getElementById('barra-secciones').style.display = 'flex'; // MUESTRA la barra
 }
 
 // Mostrar el modal perfil
@@ -560,9 +674,15 @@ function buscarUsuario() {
 
 cargarNotificaciones();
 
-function toggleNotificaciones() {
+function toggleNotificaciones(e) {
+  if (e) e.stopPropagation();
+    const menu = document.getElementById('menu');
+  if (menu && menu.style.display === 'block') {
+    menu.style.display = 'none';
+  }
   const bandeja = document.getElementById('bandejaNotificaciones');
   bandeja.classList.toggle('oculto');
+  cargarNotificaciones(); // Cargar notificaciones al abrir la bandeja
 }
 
 function agregarNotificacion(mensaje, id, idGrupo) {
@@ -645,14 +765,26 @@ function cargarNotificaciones() {
         data.notificaciones.forEach(notificacion => {
           agregarNotificacion(notificacion.contenido, notificacion.id, notificacion.idGrupo);
         });
+       // Mostrar el puntito si hay notificaciones
+        const notiDot = document.getElementById('noti-dot');
+        if (notiDot) {
+          notiDot.style.display = data.notificaciones.length > 0 ? 'block' : 'none';
+        }
       } else {
+        // Ocultar el puntito si no hay notificaciones
+        const notiDot = document.getElementById('noti-dot');
+        if (notiDot) notiDot.style.display = 'none';
         console.error('No se pudieron cargar las notificaciones:', data.message);
       }
     })
-    .catch(err => console.error('Error al obtener notificaciones:', err));
+    .catch(err => {
+      // Ocultar el puntito si hay error
+      const notiDot = document.getElementById('noti-dot');
+      if (notiDot) notiDot.style.display = 'none';
+      console.error('Error al obtener notificaciones:', err);
+    });
 }
 
-setInterval(cargarNotificaciones, 10000);
 
 function verificarNotificacionesVacias() {
   const bandeja = document.getElementById("bandejaNotificaciones");
@@ -683,4 +815,117 @@ function eliminarGrupo(idGrupo, elementoGrupo) {
     .catch(() => alert('Error al conectar con el servidor.'));
 }
 
+// Cerrar menú hamburguesa y bandeja de notificaciones al hacer clic fuera de ellos
+document.addEventListener('click', function(e) {
+  // Cerrar menú hamburguesa
+  const menu = document.getElementById('menu');
+  const btnMenu = document.getElementById('btnMenu');
+  if (menu && btnMenu) {
+    if (
+      menu.style.display === 'block' &&
+      !menu.contains(e.target) &&
+      e.target !== btnMenu
+    ) {
+      menu.style.display = 'none';
+    }
+  }
 
+  // Cerrar bandeja de notificaciones
+  const bandeja = document.getElementById('bandejaNotificaciones');
+  const btnNoti = document.getElementById('notificacionesBtn');
+  if (bandeja && btnNoti) {
+    if (
+      !bandeja.classList.contains('oculto') &&
+      !bandeja.contains(e.target) &&
+      e.target !== btnNoti
+    ) {
+      bandeja.classList.add('oculto');
+    }
+  }
+});
+
+function mostrarMiembrosGrupo() {
+  // Pedir miembros al backend
+  fetch('main.php?action=miembros_grupo&id_grupo=' + encodeURIComponent(grupoActivoId))
+    .then(res => res.json())
+    .then(data => {
+      const lista = document.getElementById('listaMiembrosGrupo');
+      lista.innerHTML = '';
+      lista.className = 'listaMiembrosGrupo';
+     if (data.success && Array.isArray(data.miembros)) {
+        data.miembros.forEach(miembro => {
+          const li = document.createElement('li');
+          li.className ='miembros-item';
+          
+
+          // Nombre del miembro
+          const nombreSpan = document.createElement('span');
+          nombreSpan.className = 'miembro-email';
+          nombreSpan.textContent = miembro.miembro;
+          nombreSpan.title = miembro.miembro;
+          // Botón expulsar
+          const btnExpulsar = document.createElement('button');
+          btnExpulsar.textContent = 'Expulsar';
+          btnExpulsar.className = 'btn';
+          btnExpulsar.onclick = function() {
+            // Acá después ponés la lógica para expulsar
+            if (!confirm('¿Seguro que quieres expulsar este miembro?')) return;
+            fetch('main.php?action=expulsar_miembro&id_grupo=' + encodeURIComponent(grupoActivoId) + '&miembro=' + encodeURIComponent(miembro.miembro))
+              .then(res => res.json())
+              .then(data => {
+                if (data.success) {
+                  li.remove(); // Elimina el elemento de la lista
+                } else {
+                  alert('Error al expulsar al miembro: ' + (data.message || 'Error desconocido'));
+                }
+              })
+              .catch(() => alert('Error al conectar con el servidor.'));
+
+          };
+
+          li.appendChild(nombreSpan);
+          li.appendChild(btnExpulsar);
+          lista.appendChild(li);
+        });
+      } else {
+        lista.innerHTML = '<li>No se pudieron cargar los miembros.</li>';
+      }
+      document.getElementById('modalMiembrosGrupo').classList.remove('oculto');
+    })
+    .catch(() => {
+      const lista = document.getElementById('listaMiembrosGrupo');
+      lista.innerHTML = '<li>Error al conectar con el servidor.</li>';
+      document.getElementById('modalMiembrosGrupo').classList.remove('oculto');
+    });
+}
+
+function cerrarModalMiembrosGrupo() {
+  document.getElementById('modalMiembrosGrupo').classList.add('oculto');
+}
+
+// Cerrar modales al hacer clic fuera de ellos
+window.addEventListener('click', function(e) {
+  // Modal Miembros Grupo
+  const modalMiembros = document.getElementById('modalMiembrosGrupo');
+  if (modalMiembros && !modalMiembros.classList.contains('oculto')) {
+    if (e.target === modalMiembros) {
+      cerrarModalMiembrosGrupo();
+    }
+  }
+
+  // Modal Agregar Amigo
+  const modalAgregar = document.getElementById('modalAgregarAmigo');
+  if (modalAgregar && !modalAgregar.classList.contains('oculto')) {
+    if (e.target === modalAgregar) {
+      cerrarModalAgregarAmigo();
+    }
+  }
+
+  // Modal Historial Nota
+  const modalHistorial = document.getElementById('modalHistorialNota');
+  if (modalHistorial && !modalHistorial.classList.contains('oculto')) {
+    if (e.target === modalHistorial) {
+      cerrarModalHistorialNota();
+    }
+  }
+});

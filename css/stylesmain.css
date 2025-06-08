@@ -9,8 +9,14 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  
   overflow-x: hidden;
+}
+
+body.dark-mode {
+  background: linear-gradient(150deg, #2a004f, #320b86, #0d47a1);
+  background-size: 400% 400%;
+  animation: gradientShift 20s ease-in-out infinite alternate-reverse;
+  color: #e0e0e0;
 }
 
 @keyframes gradientShift {
@@ -27,7 +33,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 40px;
+  padding: 15px 40px;
   background-color: rgba(255, 255, 255, 0.2);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
   position: sticky;
@@ -37,11 +43,12 @@ body {
   border-radius: 25px;
   position: relative;
   box-sizing: border-box;
+  z-index: 1;
 }
 .acciones-header {
   display: flex;
   align-items: center;
-  gap: 20px; /* o lo que prefieras */
+  gap: 20px;
 }
 
 .logo h1 {
@@ -89,7 +96,7 @@ body {
 .wrapper {
   backdrop-filter: blur(5px); 
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 10px;
   width: 92%;
   margin: auto;
@@ -100,7 +107,14 @@ body {
   border-radius: 20px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
-  grid-auto-rows: 180px; /* Altura fija para las filas */
+  grid-auto-rows: 200px; /* Altura fija para las filas */
+  scrollbar-width: thin;
+  scrollbar-color: #66b8e6 #dff3f7;
+}
+body.dark-mode .wrapper {
+  background-color: rgba(30, 30, 30, 1);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  scrollbar-color: #bbb #444;
 }
 
 /* boton para agregar nota */
@@ -121,6 +135,10 @@ body {
   font-size: 15px;
   transition: background-color 0.3s ease;
   
+}
+body.dark-mode .add-box { 
+  background-color: #323334; 
+  color: white;
 }
 
 .add-box:hover {
@@ -156,12 +174,17 @@ body {
   flex-direction: column;
   overflow: hidden;
 }
+body.dark-mode .note-box {
+  background-color: #2a475b; 
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.4);
+}
 
 .note-box:hover {
   transform: translateY(-4px);
 }
 
 .note-title {
+  top: 1px;
   margin: 0;
   font-size: 1rem;
   color: #333;
@@ -173,6 +196,7 @@ body {
   line-clamp: 1;
   overflow: hidden;
 }
+body.dark-mode .note-title{color: white;}
 
 .note-content {
   font-size: 0.9rem;
@@ -180,6 +204,8 @@ body {
   color: #444;
   outline: none;
 }
+body.dark-mode .note-content{color: #e5f3f6;}
+
 /*parche para q no muestre de mas*/
 .note-box .note-content {
   overflow: hidden;
@@ -188,6 +214,14 @@ body {
   -webkit-line-clamp: 4;
   line-clamp: 4;
   -webkit-box-orient: vertical;
+  white-space: normal;
+}
+
+.ampliada .note-content {
+  white-space: pre-wrap;
+  overflow: auto;
+  text-overflow: unset;
+  display: block;
 }
 
 /* borrar nota tachito*/
@@ -232,7 +266,7 @@ body {
   text-align: right;
 
 }
-
+body.dark-mode .note-footer{color: #aea9ba;}
 /* fondo oscuro atras de la nota ampliada */
 .overlay {
   position: fixed;
@@ -265,6 +299,7 @@ body {
   transform-origin:center;
 
 }
+body.dark-mode .ampliada{background-color: #aea9ba;}
 
 .ampliada h3,
 .ampliada p {
@@ -277,15 +312,27 @@ body {
 }
 
 /* el boton q cierra la nota ampliada */
-.cerrar-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: none;
+.nota-btn {
+ background: none;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
   color: #a00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.note-actions {
+   display: flex;
+  justify-content: flex-end;
+  align-items: center; /* asegura alineación vertical */
+  gap: 8px;
+  margin-bottom: 5px;
 }
 
 @keyframes abrirNotaVertical {
@@ -297,12 +344,6 @@ body {
     transform: scaleY(1);
     opacity: 1;
   }
-}
-.note-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-bottom: 5px;
 }
 
 .dragging {
@@ -346,6 +387,57 @@ body {
   margin-bottom: 16px;
 }
 
+/*miembros de los grupos*/
+.modalMiembros .modal-contenido{
+  width: 450px;
+  background-color: rgba(102, 184, 230, 0.6);
+  border: 1px solid rgba(102, 184, 230, 0.4);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(102, 184, 230, 0.3);
+  padding: 16px;
+  text-align: left;
+}
+
+.listaMiembrosGrupo {
+  margin-top: 25px;
+  list-style: none;      
+  padding: 0;
+}
+
+.miembro-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  border-bottom: 1px solid #66b8e6; 
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+.miembro-email{
+  flex: 1;
+  color: #ecf0f1;
+  font-family: 'Poppins', sans-serif;    
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(102, 184, 230, 0.5);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  max-width: 100%;
+  padding: 4px 8px;
+}
+.modalMiembros .btn {
+  right: 5px;
+  margin: 10px;
+  background-color: rgba(102, 184, 230, 0.85);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(102, 184, 230, 0.4);
+}
+.modalMiembros .btn:hover {
+  background-color: #2980b9;
+}
+
+
 /* Estilos del input */
 .input {
   width: 100%;
@@ -388,6 +480,7 @@ body {
   transition: background-color 0.3s;
   box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25), 0 4px 15px rgba(108, 92, 231, 0.4);
 }
+body.dark-mode .btn{background-color: #483D8B;}
 .btn:hover {
   background-color: #6c5ce7;
   box-shadow: 0 0 10px rgba(108, 92, 231, 0.6);
@@ -405,7 +498,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin: 20px;
   padding: 0 10px;
 }
 
@@ -461,10 +554,12 @@ body {
   color: #ffffffcc;
   font-weight: 600;
   font-size: 18px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 1);
   user-select: none;     
   margin: 0;
   padding: 0;
   z-index: 1;
+  letter-spacing: 1px;
 }
 
 /* Botón de cerrar (X) */
@@ -478,6 +573,40 @@ body {
   transition: color 0.2s ease;
 }
 
+/*historial*/
+
+.modalhistorialnota .modal-contenido {
+  width: 520px;
+  max-height: 80vh;
+  overflow-y: hidden;
+  background-color: rgba(200, 160, 255, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  font-family: 'Poppins', sans-serif;
+}
+#historialNotasContenedor.wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  background-color: rgba(200, 160, 255, 0.1);
+  border: none;
+  gap: 10px;
+  width: 92%;
+  margin-top: 20px;
+  padding: 10px;
+  height: 70vh;
+  overflow-y: scroll;
+  color: #1a3a4a;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #6c5ce7 #e0f6fb;
+}
+.modalhistorialnota .modal-header{
+  margin-bottom: 10px;
+  padding: 5px;
+  font-size: 14px;
+}
 #modalPerfil .modal-contenido {
   padding: 48px 20px 20px;
   text-align: center;
@@ -547,6 +676,8 @@ body {
 }
 
 .notificaciones-boton {
+  position: relative; 
+  display: inline-block;
   display: flex;
   cursor: pointer;
   z-index: 1100;
@@ -556,15 +687,13 @@ body {
 }
 .notificaciones-boton svg {
   fill: white;
-  top: 10px;
-  width: 28px;
-  height: 28px;
+  top: 12px;
   transition: transform 0.2s ease;
 }
 
 .bandeja-notificaciones{
   position: absolute; 
-  top: 85px;
+  top: 79px;
   right: 20px; 
   background: linear-gradient(135deg, #5946d2, #4cb0e6);
   border: 1px solid #aab4ff;
@@ -653,7 +782,7 @@ body {
 
 .menu {
   position: fixed;
-  top: 85px;
+  top: 79px;
   right: 10px;
   width: 220px;
   background: linear-gradient(135deg, #6c5ce7, #66b8e6);
@@ -805,3 +934,15 @@ html {
    box-sizing: border-box;
 }
 
+/* Puntito rojo de notificaciones */
+#noti-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+}
